@@ -77,17 +77,17 @@ real :: realnumber !< dummy variable to use in HUGE initializations
    real,               public, parameter :: TFREEZE = 273.15_r8_kind     !< Freezing temperature of fresh water [K]
 #else
 
-   #ifdef SMALL_EARTH
-      #if defined(DCMIP) || (defined(HIWPP) && defined(SUPER_K))
-      real, private, parameter :: small_fac =  1._r8_kind / 120._r8_kind #only needed for supercell test
-      #elif defined(HIWPP)
-      real, private, parameter :: small_fac = 1._r8_kind / 166.7_r8_kind
-      #else
-      real, private, parameter :: small_fac = 1._r8_kind / 10._r8_kind
-      #endif
-   #else
-      real, private, parameter :: small_fac = 1._r8_kind
-   #endif
+#ifdef SMALL_EARTH
+#if defined(DCMIP) || (defined(HIWPP) && defined(SUPER_K))
+   real, private, parameter :: small_fac =  1._r8_kind / 120._r8_kind #only needed for supercell test
+#elif defined(HIWPP)
+   real, private, parameter :: small_fac = 1._r8_kind / 166.7_r8_kind
+#else
+   real, private, parameter :: small_fac = 1._r8_kind / 10._r8_kind
+#endif
+#else
+   real, private, parameter :: small_fac = 1._r8_kind
+#endif
 
    real,         public, parameter :: RADIUS = 6371.0e+3_r8_kind * small_fac   !< Radius of the Earth [m]
    real(kind=8), public, parameter :: PI_8   = 3.14159265358979323846_r8_kind  !< Ratio of circle circumference to diameter [N/A]
