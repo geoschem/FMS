@@ -3274,12 +3274,14 @@ subroutine save_default_restart(fileObj,restartpath)
               else if( Associated(fileObj%p3dr(k,j)%p) ) then
                  call mpp_write(unit, cur_var%field, array_domain(cur_var%domain_idx), fileObj%p3dr(k,j)%p, tlev, &
                                 default_data=cur_var%default_data)
+#ifndef MAPL_MODE
               else if( Associated(fileObj%p2dr8(k,j)%p) ) then
                  call mpp_write(unit, cur_var%field, array_domain(cur_var%domain_idx), fileObj%p2dr8(k,j)%p, tlev_r8, &
                                 default_data=real(cur_var%default_data,kind=DOUBLE_KIND))
               else if( Associated(fileObj%p3dr8(k,j)%p) ) then
                  call mpp_write(unit, cur_var%field, array_domain(cur_var%domain_idx), fileObj%p3dr8(k,j)%p, tlev_r8, &
                                 default_data=real(cur_var%default_data,kind=DOUBLE_KIND))
+#endif
               else if( Associated(fileObj%p4dr(k,j)%p) ) then
                  call mpp_write(unit, cur_var%field, array_domain(cur_var%domain_idx), fileObj%p4dr(k,j)%p, tlev, &
                                 default_data=cur_var%default_data)
@@ -4088,6 +4090,7 @@ subroutine restore_state_all(fileObj, directory, nonfatal_missing_files)
                        call mpp_read(unit(n), fields(l), array_domain(domain_idx), fileObj%p3dr(k,j)%p, tlev)
                        if ( is_there_a_checksum ) &
                          checksum_data = mpp_chksum(fileObj%p3dr(k,j)%p(cur_var%is:cur_var%is+iadd,cur_var%js:cur_var%js+jadd, :) )
+#ifndef MAPL_MODE
                     else if( Associated(fileObj%p2dr8(k,j)%p) ) then
                        call mpp_read(unit(n), fields(l), array_domain(domain_idx), fileObj%p2dr8(k,j)%p, tlev)
                        if ( is_there_a_checksum ) &
@@ -4096,6 +4099,7 @@ subroutine restore_state_all(fileObj, directory, nonfatal_missing_files)
                        call mpp_read(unit(n), fields(l), array_domain(domain_idx), fileObj%p3dr8(k,j)%p, tlev)
                        if ( is_there_a_checksum ) &
                          checksum_data = mpp_chksum(fileObj%p3dr8(k,j)%p(cur_var%is:cur_var%is+iadd,cur_var%js:cur_var%js+jadd, :) )
+#endif
                     else if( Associated(fileObj%p4dr(k,j)%p) ) then
                        call mpp_read(unit(n), fields(l), array_domain(domain_idx), fileObj%p4dr(k,j)%p, tlev)
                        if ( is_there_a_checksum ) &
