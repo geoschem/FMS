@@ -243,7 +243,11 @@ real, public, parameter :: RAD_TO_DEG=180./PI
 real, public, parameter :: DEG_TO_RAD=PI/180.
 real, public, parameter :: RADIAN  = RAD_TO_DEG
 real, public, parameter :: C2DBARS = 1.e-4
+#ifdef MAPL_MODE
+real, public, parameter :: KELVIN  = 273.16
+#else
 real, public, parameter :: KELVIN  = 273.15
+#endif
 real, public, parameter :: EPSLN   = 1.0e-40
 !-----------------------------------------------------------------------
 public :: constants_init
