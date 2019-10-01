@@ -1,5 +1,5 @@
 esma_set_this ()
-string (REPLACE GFDL_fms_ "" precision ${this})
+string (REPLACE fms_ "" precision ${this})
 
 # The following logic is to avoid duplication in the supported GNUMake logic.
 # Source files (and headers) are listed in a separate file, and we must
@@ -187,7 +187,7 @@ foreach (file ${srcs_and_includes})
   endif ()
 endforeach ()
 
-set (lib GFDL_fms_${precision})
+set (lib fms_${precision})
 
 esma_add_library (${lib} SRCS ${srcs})
 target_link_libraries (${lib} ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
