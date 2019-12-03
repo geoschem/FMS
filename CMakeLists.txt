@@ -173,6 +173,7 @@ set(srcs_and_includes
   exchange/test_xgrid.F90                         
   diag_manager/diag_table.F90                     
   diag_manager/diag_manifest.F90
+  include/mojave_fix.h
   )
 
 
