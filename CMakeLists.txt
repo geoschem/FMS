@@ -193,8 +193,8 @@ set (lib fms_${precision})
 esma_add_library (${lib} SRCS ${srcs})
 target_link_libraries (${lib} ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 
-target_include_directories (${lib} PRIVATE include mpp/include fft fms)
-target_include_directories (${lib} PRIVATE ${INC_NETCDF})
+target_include_directories (${lib} PUBLIC include mpp/include fft fms)
+target_include_directories (${lib} PUBLIC ${INC_NETCDF})
 
 file (COPY include/fms_platform.h DESTINATION ${include_${this}})
 file (COPY include/file_version.h DESTINATION ${include_${this}})
