@@ -1,6 +1,5 @@
-#include "mojave_fix.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include "read_mosaic.h"
