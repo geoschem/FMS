@@ -190,7 +190,7 @@ endforeach ()
 set (lib fms_${precision})
 
 esma_add_library (${lib} SRCS ${srcs})
-target_link_libraries (${lib} ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+target_link_libraries (${lib} ${NETCDF_LIBRARIES} MPI::MPI_Fortran)
 
 target_include_directories (${lib} PUBLIC include mpp/include fft fms)
 target_include_directories (${lib} PUBLIC ${INC_NETCDF})
