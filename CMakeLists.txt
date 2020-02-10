@@ -232,6 +232,9 @@ file (COPY include/file_version.h DESTINATION ${include_${this}})
 
 # Various compiler options and CPP definitions ...
 target_compile_definitions (${lib} PRIVATE OVERLOAD_R4 MAPL_MODE SPMD use_libMPI use_netCDF PORTABLE_KINDS)
+if (precision MATCHES "r4")
+   target_compile_definitions (${lib} PRIVATE OVERLOAD_R8)
+endif ()
 
 if (APPLE)
    target_compile_definitions(${lib} PRIVATE __APPLE__)
