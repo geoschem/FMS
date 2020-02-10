@@ -59,7 +59,7 @@ real :: realnumber !< dummy variable to use in HUGE initializations
 #else
 
 #ifdef GFS_PHYS
-   ! SJL: the following are from fv3_gfsphysics/gfs_phyeics/physics/physcons.f90
+   ! SJL: the following are from fv3_gfsphysics/gfs_physics/physics/physcons.f90
    real,               public, parameter :: RADIUS = 6.3712e+6_r8_kind           !< Radius of the Earth [m]
    real(kind=r8_kind), public, parameter :: PI_8   = 3.1415926535897931_r8_kind  !< Ratio of circle circumference to diameter [N/A]
    real,               public, parameter :: PI     = 3.1415926535897931_r8_kind  !< Ratio of circle circumference to diameter [N/A] (REAL(KIND=8))
