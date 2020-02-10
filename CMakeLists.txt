@@ -37,7 +37,6 @@ set(srcs_and_includes
    drifters/fms_switches.h
    drifters/quicksort.F90
    exchange/stock_constants.F90
-   exchange/test_xgrid.F90
    exchange/xgrid.F90
    field_manager/field_manager.F90
    field_manager/fm_util.F90
@@ -57,8 +56,6 @@ set(srcs_and_includes
    fms/read_data_2d.inc
    fms/read_data_3d.inc
    fms/read_data_4d.inc
-   fms/test_fms_io.F90
-   fms/test_unstructured_fms_io.F90
    fms/write_data.inc
    horiz_interp/horiz_interp.F90
    horiz_interp/horiz_interp_bicubic.F90
@@ -66,7 +63,6 @@ set(srcs_and_includes
    horiz_interp/horiz_interp_conserve.F90
    horiz_interp/horiz_interp_spherical.F90
    horiz_interp/horiz_interp_type.F90
-   horiz_interp/test_horiz_interp.F90
    include/file_version.h
    include/fms_platform.h
    interpolator/interpolator.F90
@@ -86,7 +82,6 @@ set(srcs_and_includes
    mosaic/mosaic_util.h
    mosaic/read_mosaic.c
    mosaic/read_mosaic.h
-   mpp/affinity.c
    mpp/mpp.F90
    mpp/mpp_data.F90
    mpp/mpp_domains.F90
@@ -97,10 +92,6 @@ set(srcs_and_includes
    mpp/mpp_pset.F90
    mpp/mpp_utilities.F90
    mpp/nsclock.c
-   mpp/test_mpp.F90
-   mpp/test_mpp_domains.F90
-   mpp/test_mpp_io.F90
-   mpp/test_mpp_pset.F90
    mpp/threadloc.c
    mpp/include/group_update_pack.inc
    mpp/include/group_update_unpack.inc
@@ -205,6 +196,9 @@ set(srcs_and_includes
    topography/topography.F90
    tracer_manager/tracer_manager.F90
    tridiagonal/tridiagonal.F90
+   affinity/affinity.c
+   affinity/fms_affinity.F90
+   affinity/test_affinity.F90
    )
 
 
