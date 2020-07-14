@@ -196,6 +196,9 @@ set(srcs_and_includes
    topography/topography.F90
    tracer_manager/tracer_manager.F90
    tridiagonal/tridiagonal.F90
+   #affinity/affinity.c
+   #affinity/fms_affinity.F90
+   #affinity/test_affinity.F90
    )
 
 
