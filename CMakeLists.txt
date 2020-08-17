@@ -249,6 +249,7 @@ if (CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
 endif ()
 if (CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   target_compile_options (${lib} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-diag-disable 6843,7712>) # warnings about dummy args
+  target_compile_options (${lib} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-no-heap-arrays>) # mom issue with Intel 19
 endif ()
 if (CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
   target_compile_definitions (${lib} PRIVATE NO_QUAD_PRECISION)
