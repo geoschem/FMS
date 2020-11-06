@@ -63,7 +63,7 @@ subroutine mpp_error_basic( errortype, errormsg )
 #endif
      write( outunit,'(/a/)' )trim(text)
      if( errortype.EQ.FATAL .OR. warnings_are_fatal )then
-        call FLUSH(outunit)
+        flush(outunit)
 #ifdef sgi_mipspro
         call TRACE_BACK_STACK_AND_PRINT()
 #endif

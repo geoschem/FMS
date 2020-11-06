@@ -2120,7 +2120,7 @@ end subroutine check_message_size
                   overlapList(m)%dir(n), overlapList(m)%rotation(n)
           enddo
        enddo
-       if(nsend >0) call flush(unit)
+       if(nsend >0) flush(unit)
     endif
 
     ! copy the overlapping information into domain data structure
@@ -2697,7 +2697,7 @@ end subroutine check_message_size
                   overlapList(m)%dir(n), overlapList(m)%rotation(n)
           enddo
        enddo
-       if(nrecv >0) call flush(unit)
+       if(nrecv >0) flush(unit)
     endif
 
     ! copy the overlapping information into domain
@@ -3285,7 +3285,7 @@ end subroutine check_message_size
                   overlapList(m)%dir(n), overlapList(m)%rotation(n)
           enddo
        enddo
-       if( nsend > 0) call flush(unit)
+       if( nsend > 0) flush(unit)
     endif
 
     ! copy the overlapping information into domain data structure
@@ -3555,7 +3555,7 @@ end subroutine check_message_size
                   overlapList(m)%dir(n), overlapList(m)%rotation(n)
           enddo
        enddo
-       if(nrecv >0) call flush(unit)
+       if(nrecv >0) flush(unit)
     endif
 
     ! copy the overlapping information into domain
@@ -3916,7 +3916,7 @@ end subroutine check_message_size
                   overlapList(m)%dir(n), overlapList(m)%rotation(n)
           enddo
        enddo
-       if(nsend >0) call flush(unit)
+       if(nsend >0) flush(unit)
     endif
 
    ! copy the overlapping information into domain data structure
@@ -4179,7 +4179,7 @@ end subroutine check_message_size
                   overlapList(m)%dir(n), overlapList(m)%rotation(n)
           enddo
        enddo
-       if(nrecv >0) call flush(unit)
+       if(nrecv >0) flush(unit)
     endif
 
     ! copy the overlapping information into domain
@@ -5697,7 +5697,7 @@ end subroutine check_message_size
                   overlapSend(m)%dir(n), overlapSend(m)%rotation(n)
           enddo
        enddo
-       if(nsend >0) call flush(unit)
+       if(nsend >0) flush(unit)
     endif
 
     dirlist(1) = 1; dirlist(2) = 3; dirlist(3) = 5; dirlist(4) = 7
@@ -5767,7 +5767,7 @@ end subroutine check_message_size
                   overlapRecv(m)%dir(n), overlapRecv(m)%rotation(n)
           enddo
        enddo
-       if(nrecv >0) call flush(unit)
+       if(nrecv >0) flush(unit)
     endif
 
     if(nrecv >0) then

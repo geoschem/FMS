@@ -227,7 +227,7 @@ subroutine mpp_exit()
         write( outunit,'(/32x,a)' ) '          tmin          tmax          tavg          tstd  tfrac grain pemin pemax'
      end if
      write( logunit, '(/37x,a)' ) 'time'
-     call FLUSH( outunit )
+     flush( outunit )
      call mpp_sync()
      do i = 1,clock_num
         if( .NOT.ANY(peset(clocks(i)%peset_num)%list(:).EQ.pe) )cycle
@@ -277,7 +277,7 @@ subroutine mpp_exit()
 ! close down etc_unit: 9
   inquire(unit=etc_unit, opened=opened)
   if (opened) then
-   call FLUSH (etc_unit)
+   flush (etc_unit)
    close(etc_unit)
   endif
 
