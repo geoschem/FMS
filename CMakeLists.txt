@@ -215,7 +215,7 @@ endforeach ()
 
 set (lib fms_${precision})
 
-esma_add_library (${lib} SRCS ${srcs})
+esma_add_library (${lib} SRCS ${srcs} TYPE SHARED)
 target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 
 target_include_directories (${lib} PUBLIC
