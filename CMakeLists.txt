@@ -207,7 +207,10 @@ if (APPLE)
    target_compile_definitions(${lib} PRIVATE __APPLE__)
 endif ()
 
-set (CMAKE_Fortran_FLAGS_RELEASE "${GEOS_Fortran_FLAGS_VECT}")
+# Allow shell-like quoted compiler options by replacing
+# set (CMAKE_Fortran_FLAGS_RELEASE "${GEOS_Fortran_FLAGS_VECT}")
+# with
+target_compile_options(${lib} PRIVATE $<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:Fortran>>:${GEOS_Fortran_FLAGS_VECT}>)
 
 if (CMAKE_Fortran_COMPILER_ID MATCHES "NAG")
   target_compile_options (${lib} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-kind=byte>)
