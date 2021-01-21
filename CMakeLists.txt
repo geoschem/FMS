@@ -195,7 +195,7 @@ esma_add_library (${lib} SRCS ${srcs})
 target_link_libraries (${lib} ${NETCDF_LIBRARIES} MPI::MPI_Fortran)
 
 target_include_directories (${lib} PUBLIC include mpp/include fft fms)
-target_include_directories (${lib} PUBLIC ${INC_NETCDF})
+target_include_directories (${lib} PUBLIC ${INC_NETCDF} ${NETCDF_F77_INCLUDE_DIR})
 
 file (COPY include/fms_platform.h DESTINATION ${include_${this}})
 file (COPY include/file_version.h DESTINATION ${include_${this}})
