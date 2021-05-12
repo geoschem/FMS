@@ -216,7 +216,9 @@ endforeach ()
 set (lib fms_${precision})
 
 esma_add_library (${lib} SRCS ${srcs} TYPE SHARED)
-target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+# GCHP: link to MPI differently
+#target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} MPI::MPI_Fortran)
 
 target_include_directories (${lib} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
@@ -224,7 +226,9 @@ target_include_directories (${lib} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fft>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fms>
 )
-target_include_directories (${lib} PUBLIC ${INC_NETCDF})
+# GCHP: ad missing netcdf fortran include
+#target_include_directories (${lib} PUBLIC ${INC_NETCDF})
+target_include_directories (${lib} PUBLIC ${INC_NETCDF} ${NETCDF_F77_INCLUDE_DIR})
 
 file (COPY include/fms_platform.h DESTINATION ${include_${this}})
 file (COPY include/file_version.h DESTINATION ${include_${this}})
