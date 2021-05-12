@@ -215,7 +215,10 @@ endforeach ()
 
 set (lib fms_${precision})
 
-esma_add_library (${lib} SRCS ${srcs} TYPE SHARED)
+# GCHP: do not use shared library
+#esma_add_library (${lib} SRCS ${srcs} TYPE SHARED)
+esma_add_library (${lib} SRCS ${srcs})
+
 # GCHP: link to MPI differently
 #target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
 target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} MPI::MPI_Fortran)
