@@ -253,6 +253,8 @@ set (CMAKE_Fortran_FLAGS_RELEASE "${GEOS_Fortran_FLAGS_VECT}")
 # moves them back to the 'bounds,uninit' GEOS used to build with.
 if (CMAKE_Fortran_COMPILER_ID MATCHES "Intel" AND CMAKE_BUILD_TYPE MATCHES Debug)
    string(REPLACE "all,noarg_temp_created" "bounds,uninit" _tmp "${GEOS_Fortran_FLAGS_DEBUG}")
+   string(REPLACE "SHELL:" "" _tmp "${_tmp}")  # lrb: this block cannot handle the SHELL: prefix; t.f., remove it
+   string(REPLACE ";" " " _tmp "${_tmp}")      # lrb: this block expects the options as space-separated list
    set (CMAKE_Fortran_FLAGS_DEBUG "${_tmp}")
 endif ()
 
