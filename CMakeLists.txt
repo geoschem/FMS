@@ -216,28 +216,21 @@ endforeach ()
 set (lib fms_${precision})
 
 # GCHP: do not use shared library
-#esma_add_library (${lib} SRCS ${srcs} TYPE SHARED)
-esma_add_library (${lib} SRCS ${srcs})
-
-# GCHP: link to MPI differently
-#target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES})
-target_link_libraries (${lib} PUBLIC ${NETCDF_LIBRARIES} MPI::MPI_Fortran)
+#esma_add_library (${lib} SRCS ${srcs} DEPENDENCIES NetCDF::NetCDF_Fortran MPI::MPI_Fortran TYPE SHARED)
+esma_add_library (${lib} SRCS ${srcs} DEPENDENCIES NetCDF::NetCDF_Fortran MPI::MPI_Fortran)
 
 target_include_directories (${lib} PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpp/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fft>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fms>
 )
-# GCHP: ad missing netcdf fortran include
-#target_include_directories (${lib} PUBLIC ${INC_NETCDF})
-target_include_directories (${lib} PUBLIC ${INC_NETCDF} ${NETCDF_F77_INCLUDE_DIR})
 
 file (COPY include/fms_platform.h DESTINATION ${include_${this}})
 file (COPY include/file_version.h DESTINATION ${include_${this}})
 
 # Various compiler options and CPP definitions ...
-target_compile_definitions (${lib} PRIVATE OVERLOAD_R4 MAPL_MODE SPMD use_libMPI use_netCDF PORTABLE_KINDS HAVE_GETTID)
+target_compile_definitions (${lib} PRIVATE OVERLOAD_R4 MAPL_MODE SPMD use_libMPI use_netCDF PORTABLE_KINDS HAVE_GETTID INTERNAL_FILE_NML)
 if (precision MATCHES "r4")
    target_compile_definitions (${lib} PRIVATE OVERLOAD_R8)
 endif ()
@@ -278,4 +271,4 @@ endif ()
 
 
 
-  
+
