@@ -1,102 +1,12 @@
-#***********************************************************************
-#*                   GNU Lesser General Public License
-#*
-#* This file is part of the GFDL Flexible Modeling System (FMS).
-#*
-#* FMS is free software: you can redistribute it and/or modify it under
-#* the terms of the GNU Lesser General Public License as published by
-#* the Free Software Foundation, either version 3 of the License, or (at
-#* your option) any later version.
-#*
-#* FMS is distributed in the hope that it will be useful, but WITHOUT
-#* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-#* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-#* for more details.
-#*
-#* You should have received a copy of the GNU Lesser General Public
-#* License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
-#***********************************************************************
+esma_set_this ()
+string (REPLACE fms_ "" precision ${this})
 
-# Copyright (c) GFDL, @underwoo
+# The following logic is to avoid duplication in the supported GNUMake logic.
+# Source files (and headers) are listed in a separate file, and we must
+# process this into something that CMake can use for assembling a library.
 
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-# Define the CMake project
-project(FMS
-  VERSION 2022.02.0
-  DESCRIPTION  "GFDL FMS Library"
-  HOMEPAGE_URL "https://www.gfdl.noaa.gov/fms"
-  LANGUAGES C Fortran)
-
-include(GNUInstallDirs)
-
-if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
-  message(STATUS "Setting build type to 'Release' as none was specified.")
-  set(CMAKE_BUILD_TYPE
-      "Release"
-      CACHE STRING "Choose the type of build." FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
-
-if(NOT CMAKE_C_COMPILER_ID MATCHES "^(Intel|GNU|Clang)$")
-  message(
-    WARNING "Compiler not officially supported: ${CMAKE_C_COMPILER_ID}")
-endif()
-
-if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|GNU)$")
-  message(
-    WARNING "Compiler not officially supported: ${CMAKE_Fortran_COMPILER_ID}")
-endif()
-
-# Append directory that contains CMake Modules for building FMS
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-# Build options
-option(OPENMP "Build FMS with OpenMP support"        OFF)
-option(32BIT  "Build 32-bit (r4) FMS library"         ON)
-option(64BIT  "Build 64-bit (r8) FMS library"        OFF)
-option(FPIC   "Build with position independent code" OFF)
-
-# Options for compiler definitions
-option(INTERNAL_FILE_NML     "Enable compiler definition -DINTERNAL_FILE_NML"      ON)
-option(ENABLE_QUAD_PRECISION "Enable compiler definition -DENABLE_QUAD_PRECISION"  ON)
-option(GFS_PHYS              "Enable compiler definition -DGFS_PHYS"              OFF)
-option(LARGEFILE             "Enable compiler definition -Duse_LARGEFILE"         OFF)
-option(WITH_YAML             "Enable compiler definition -Duse_yaml"              OFF)
-
-if(32BIT)
-  list(APPEND kinds "r4")
-endif()
-if(64BIT)
-  list(APPEND kinds "r8")
-endif()
-if(NOT kinds)
-  message(STATUS "Single Precision 32BIT: ${32BIT}")
-  message(STATUS "Double Precision 64BIT: ${64BIT}")
-  message(FATAL_ERROR "Either 32BIT or 64BIT should be ON")
-endif()
-
-# Find dependencies
-find_package(MPI REQUIRED COMPONENTS C Fortran)
-find_package(NetCDF REQUIRED COMPONENTS C Fortran)
-
-# Check for the OpenMP library and set the required compile flags
-if (OPENMP)
-  find_package(OpenMP REQUIRED COMPONENTS C Fortran)
-endif()
-
-if (WITH_YAML)
-  find_package(libyaml REQUIRED)
-  include_directories(${LIBYAML_INCLUDE_DIR})
-endif ()
-
-# Enables position independent code (i.e., -fPIC)
-if (FPIC)
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif ()
-
-# Collect FMS Fortran source files
-list(APPEND fms_fortran_src_files
+set(srcs_and_includes
   affinity/fms_affinity.F90
   amip_interp/amip_interp.F90
   astronomy/astronomy.F90
@@ -178,10 +88,6 @@ list(APPEND fms_fortran_src_files
   tracer_manager/tracer_manager.F90
   tridiagonal/tridiagonal.F90
   libFMS.F90
-)
-
-# Collect FMS C source files
-list(APPEND fms_c_src_files
   affinity/affinity.c
   mosaic/create_xgrid.c
   mosaic/gradient_c2l.c
@@ -191,176 +97,80 @@ list(APPEND fms_c_src_files
   mpp/mpp_memuse.c
   parser/yaml_parser_binding.c
   string_utils/fms_string_utils_binding.c
-)
-
-# Collect FMS header files
-list(APPEND fms_header_files
   include/file_version.h
   include/fms_platform.h
 )
 
-# Standard FMS compiler definitions
-list(APPEND fms_defs
-  use_libMPI
-  use_netCDF)
 
-# check gettid
-include(CheckFunctionExists)
-check_function_exists(gettid HAVE_GETTID)
-if(HAVE_GETTID)
-  list(APPEND fms_defs HAVE_GETTID)
-endif()
+# Filter out header files
+set (srcs)
+foreach (file ${srcs_and_includes})
+  string (REGEX MATCH ".+\\.h" header ${file})
+  string (REGEX MATCH ".+\\.inc" inc ${file})
+  if (header OR inc)
+  else ()
+    list (APPEND srcs ${file})
+  endif ()
+endforeach ()
 
-# Additional (optional) compiler definitions
-if(NOT CONSTANTS)
-    set(CONSTANTS GFDL)
-endif()
-if(CONSTANTS STREQUAL "GFS")
-  list(APPEND fms_defs GFS_CONSTANTS)
-elseif(CONSTANTS STREQUAL "GEOS")
-  list(APPEND fms_defs GEOS_CONSTANTS)
-elseif(CONSTANTS STREQUAL "GFDL")
-  list(APPEND fms_defs GFDL_CONSTANTS)
-else()
-  message(FATAL_ERROR "CONSTANTS=${CONSTANTS} option not supported")
-endif()
+set (lib fms_${precision})
 
-if(GFS_PHYS)
-  list(APPEND fms_defs GFS_PHYS)
-endif()
+# GCHP: do not use shared library
+#esma_add_library (${lib} SRCS ${srcs} DEPENDENCIES NetCDF::NetCDF_Fortran MPI::MPI_Fortran TYPE SHARED)
+esma_add_library (${lib} SRCS ${srcs} DEPENDENCIES NetCDF::NetCDF_Fortran MPI::MPI_Fortran)
 
-if(WITH_YAML)
-  list(APPEND fms_defs use_yaml)
-endif()
 
-if(INTERNAL_FILE_NML)
-  list(APPEND fms_defs INTERNAL_FILE_NML)
-endif()
+target_include_directories (${lib} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpp/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fms>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fms2_io/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/constants>
+)
 
-if(ENABLE_QUAD_PRECISION)
-  list(APPEND fms_defs ENABLE_QUAD_PRECISION)
-endif()
+file (COPY include/fms_platform.h DESTINATION ${include_${this}})
+file (COPY include/file_version.h DESTINATION ${include_${this}})
 
-if(LARGEFILE)
-  list(APPEND fms_defs use_LARGEFILE)
-endif()
+# Various compiler options and CPP definitions ...
+target_compile_definitions (${lib} PRIVATE OVERLOAD_R4 MAPL_MODE SPMD use_libMPI use_netCDF PORTABLE_KINDS HAVE_GETTID INTERNAL_FILE_NML)
+if (precision MATCHES "r4")
+   target_compile_definitions (${lib} PRIVATE OVERLOAD_R8)
+endif ()
 
-# Precision-based compiler definitions
-if(32BIT)
-  list(APPEND r4_defs OVERLOAD_R4 OVERLOAD_R8)
-endif()
+if (APPLE)
+   target_compile_definitions(${lib} PRIVATE __APPLE__)
+endif ()
 
-# Add platform specific compiler definitions
-if(APPLE)
-  list(APPEND fms_defs __APPLE__)
-endif()
+set (CMAKE_Fortran_FLAGS_RELEASE "${GEOS_Fortran_FLAGS_VECT}")
 
-# Obtain compiler-specific flags
-include(fms_compiler_flags)
+# This 'resets' the Intel DEBUG flags for FMS. The stock debug flags use
+# 'all,noarg_temp_created' which seem to be too aggressive for FMS/MOM6. This
+# moves them back to the 'bounds,uninit' GEOS used to build with.
+if (CMAKE_Fortran_COMPILER_ID MATCHES "Intel" AND CMAKE_BUILD_TYPE MATCHES Debug)
+   string(REPLACE "all,noarg_temp_created" "bounds,uninit" _tmp "${GEOS_Fortran_FLAGS_DEBUG}")
+   set (CMAKE_Fortran_FLAGS_DEBUG "${_tmp}")
+endif ()
 
-foreach(kind ${kinds})
+if (CMAKE_Fortran_COMPILER_ID MATCHES "NAG")
+  target_compile_options (${lib} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-kind=byte>)
+endif ()
+if (CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+  target_compile_options (${lib} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-fcray-pointer>)
+endif ()
+if (CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  target_compile_options (${lib} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-diag-disable 6843,7712>) # warnings about dummy args
+  target_compile_options (${lib} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:-no-heap-arrays>) # mom issue with Intel 19
+endif ()
+if (CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
+  target_compile_definitions (${lib} PRIVATE NO_QUAD_PRECISION)
+endif ()
 
-  set(libTgt fms_${kind})
-  set(includeDir "include_${kind}")
-  set(moduleDir "${CMAKE_CURRENT_BINARY_DIR}/${includeDir}")
+if (precision MATCHES "r8")
+  esma_fortran_generator_list(${lib} ${FREAL8})
+endif ()
 
-  # C
-  add_library(${libTgt}_c OBJECT ${fms_c_src_files})
 
-  target_include_directories(${libTgt}_c PRIVATE include)
-  target_compile_definitions(${libTgt}_c PRIVATE "${fms_defs}")
 
-  target_link_libraries(${libTgt}_c PRIVATE NetCDF::NetCDF_C
-                                            MPI::MPI_C)
 
-  if(OpenMP_C_FOUND)
-    target_link_libraries(${libTgt}_c PRIVATE OpenMP::OpenMP_C)
-  endif()
 
-  # Fortran
-  add_library(${libTgt}_f OBJECT ${fms_fortran_src_files})
 
-  target_include_directories(${libTgt}_f PRIVATE include
-                                                 fms
-                                                 fms2_io/include
-                                                 mpp/include
-                                                 constants)
-  target_compile_definitions(${libTgt}_f PRIVATE "${fms_defs}")
-  target_compile_definitions(${libTgt}_f PRIVATE "${${kind}_defs}")
-
-  set_target_properties(${libTgt}_f PROPERTIES COMPILE_FLAGS
-                                               "${${kind}_flags}")
-  set_target_properties(${libTgt}_f PROPERTIES Fortran_MODULE_DIRECTORY
-                                               ${moduleDir})
-
-  target_link_libraries(${libTgt}_f PRIVATE NetCDF::NetCDF_Fortran
-                                            MPI::MPI_Fortran)
-
-  if(OpenMP_Fortran_FOUND)
-    target_link_libraries(${libTgt}_f PRIVATE OpenMP::OpenMP_Fortran)
-  endif()
-
-  # FMS (C + Fortran)
-  add_library(${libTgt} STATIC $<TARGET_OBJECTS:${libTgt}_c>
-                               $<TARGET_OBJECTS:${libTgt}_f>)
-
-  target_include_directories(${libTgt} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fms>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fms2_io/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpp/include>)
-
-  target_include_directories(${libTgt} INTERFACE
-    $<BUILD_INTERFACE:${moduleDir}>
-    $<INSTALL_INTERFACE:${includeDir}>)
-
-  target_compile_definitions(${libTgt} PRIVATE "${fms_defs}")
-  target_compile_definitions(${libTgt} PRIVATE "${${kind}_defs}")
-
-  target_link_libraries(${libTgt} PUBLIC NetCDF::NetCDF_Fortran
-                                         MPI::MPI_Fortran)
-
-  if(OpenMP_Fortran_FOUND)
-    target_link_libraries(${libTgt} PRIVATE OpenMP::OpenMP_Fortran)
-  endif()
-
-  add_library(FMS::${libTgt} ALIAS ${libTgt})
-
-  list(APPEND LIB_TARGETS ${libTgt})
-  install(DIRECTORY ${moduleDir}    DESTINATION ${CMAKE_INSTALL_PREFIX})
-  install(FILES ${fms_header_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/${includeDir})
-
-endforeach()
-
-install(
-  TARGETS ${LIB_TARGETS}
-  EXPORT FMSExports
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
-
-### Package config
-include(CMakePackageConfigHelpers)
-set(CONFIG_INSTALL_DESTINATION lib/cmake/fms)
-
-export(EXPORT FMSExports
-  NAMESPACE FMS::
-  FILE fms-targets.cmake)
-
-configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FMSConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/fms-config.cmake
-  INSTALL_DESTINATION ${CONFIG_INSTALL_DESTINATION})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/fms-config.cmake
-  DESTINATION ${CONFIG_INSTALL_DESTINATION})
-
-write_basic_package_version_file(
-  ${CMAKE_CURRENT_BINARY_DIR}/fms-config-version.cmake
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY AnyNewerVersion)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/fms-config-version.cmake
-  DESTINATION ${CONFIG_INSTALL_DESTINATION})
-
-install(EXPORT FMSExports
-  NAMESPACE FMS::
-  FILE fms-targets.cmake
-  DESTINATION ${CONFIG_INSTALL_DESTINATION})
